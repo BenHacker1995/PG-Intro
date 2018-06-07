@@ -20,12 +20,30 @@ router.get( '/', ( req, res ) => {
 
 router.post( '/', ( req, res ) => {
     console.log( 'In song.router POST to add' );
-    res.sendStatus( 200 );
+    const queryText = `INSERT INTO songs( artist, rank, track, published ) VALUES( 'Ghost', 15, 'Dance Macabre', '06-01-2018' )`;
+    pool.query( queryText )
+    .then( ( result ) => {
+        res.send( result.rows );
+        console.log( `Successful add of song ${ result }` );
+    }).catch( ( error ) => {
+        console.log( `Error adding song ${ error }` );
+        res.sendStatus( 500 );
+    })
 });
 
-router.put( '/', ( req, res ) => {
+router.put( '/:id', ( req, res ) => {
+    const id = req.params.id;
     console.log( 'In song.router PUT to update' );
-    res.sendStatus( 200 );
+    const queryText = `UPDATE songs SET rank=25 WHERE id=${ id }`;
+    pool.query( queryText )
+    .then( ( result ) => {
+        console.log( `Successful update of song ${ result }`);
+        res.sendStatus( 200 );
+    })
+    .catch( ( error ) => {
+        console.log( `Error updating song: ${ error }` );
+        res.sendStatus( 500 );
+    })
 });
 
 router.delete( '/:id', ( req, res ) => {
@@ -33,8 +51,8 @@ router.delete( '/:id', ( req, res ) => {
     console.log( 'In song.router DELETE to delete' );
     const queryText = 'DELETE FROM songs WHERE id=$1';
     pool.query( queryText, [ id ] )
-    .then( ( results ) => {
-        console.log( `Successful delete of song ${ results }` );
+    .then( ( result ) => {
+        console.log( `Successful delete of song ${ result }` );
         res.sendStatus( 200 );
     }).catch( ( error ) => {
         console.log( `Error deleting songs: ${ error }` );
