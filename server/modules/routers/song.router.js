@@ -20,10 +20,10 @@ router.get( '/', ( req, res ) => {
 
 router.post( '/', ( req, res ) => {
     console.log( 'In song.router POST to add' );
-    const queryText = `INSERT INTO songs( artist, rank, track, published ) VALUES( 'Ghost', 15, 'Dance Macabre', '06-01-2018' )`;
-    pool.query( queryText )
+    const queryText = `INSERT INTO songs( artist, rank, track, published ) VALUES( $1, $2, $3, $4 )`;
+    pool.query( queryText, [ req.body.artist, req.body.rank, req.body.track, req.body.published ] )
     .then( ( result ) => {
-        res.send( result.rows );
+        res.sendStatus( 201 );
         console.log( `Successful add of song ${ result }` );
     }).catch( ( error ) => {
         console.log( `Error adding song ${ error }` );
